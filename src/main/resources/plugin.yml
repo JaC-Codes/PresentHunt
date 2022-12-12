@@ -1,0 +1,10 @@
+name: PresentHunt
+api-version: 1.16
+author: Jack
+version: 1.0
+main: jack.net.presenthunt.PresentHunt
+commands:
+  ph:
+    description: PresentHunt
+  phplayer:
+    description: temporary
