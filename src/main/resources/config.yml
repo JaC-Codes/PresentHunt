@@ -1,11 +1,12 @@
-Falling-Block: "CHEST"
-Landed-Crate: "ENDCHEST"
+Falling-Block: "ANVIL"
+Landed-Crate: "CHEST"
+Amount-Of-Items: 3
 Rewards:
   1:
     chance: 70
     item: "DIAMOND"
     amount: 5
-    name: "DIRT"
+    name: "DIRT" #This item will run the command and not give the item.
     lore:
       - ""
       - "&7Special xmas diamond"
