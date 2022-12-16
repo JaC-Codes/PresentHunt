@@ -12,9 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
-
 import java.util.List;
-import java.util.Objects;
 
 public class Reward {
 
@@ -33,16 +31,14 @@ public class Reward {
 
     public void giveReward(Player player) {
         Location location = player.getLocation();
-        for (int i = 0; i < 2; i++) {
             if (!itemReward.hasItemMeta()) return;
             ItemMeta meta = itemReward.getItemMeta();
             if (!meta.getDisplayName().equalsIgnoreCase("DIRT")) {
                 location.getWorld().dropItemNaturally(location, itemReward);
-                continue;
+                return;
             }
             for (String c : commands) {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), c.replace("%player%", player.getName()));
-            }
         }
     }
 
