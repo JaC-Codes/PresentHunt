@@ -30,7 +30,14 @@ public class FlareCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
         Player player = (Player) sender;
-        if (!player.hasPermission("ph.admin")) {
+
+        String permission = this.presentHunt.getConfig().getString("Flare-Permission");
+
+        if (permission == null) {
+            System.out.println("Can't find permission for the command");
+        }
+
+        if (!player.hasPermission(permission)) {
             player.sendMessage("&7You do &cnot &7have permission to use this command.");
         }
         if (args.length < 4) {
@@ -43,8 +50,9 @@ public class FlareCommand implements CommandExecutor {
                 if (args[2].equalsIgnoreCase("flare")) {
                     int amount = Integer.parseInt(args[3]);
                     presentFlare.giveFlare(target, amount);
-                    target.sendMessage(CC.translate("&7You received &f&l" + amount + " &cPresent Flares."));
-                    player.sendMessage(CC.translate("&7You have given &f&l" + target.getDisplayName() + " &c" + amount + " &cPresent Flares."));
+                    target.sendMessage(CC.translate(this.presentHunt.getConfig().getString("Received-Flare-Message")).replace("%amount%", Integer.toString(amount)));
+                    player.sendMessage(CC.translate(this.presentHunt.getConfig().getString("Given-Flare-Message")).replace("%player%", player.getName()
+                            .replace("%amount%", Integer.toString(amount))));
                     return true;
                 }
             }

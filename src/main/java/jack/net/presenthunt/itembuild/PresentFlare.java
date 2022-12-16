@@ -17,6 +17,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PresentFlare implements Listener {
@@ -27,6 +28,7 @@ public class PresentFlare implements Listener {
     private final Reward reward;
     private ItemStack itemReward;
     private List<String> commands;
+    private ItemStack flare;
 
     public PresentFlare(PresentHunt presentHunt) {
         this.presentHunt = presentHunt;
@@ -37,14 +39,20 @@ public class PresentFlare implements Listener {
 
 
     public ItemStack flare() {
-        ItemStack flare = new ItemBuild(Material.REDSTONE_TORCH, 1).setDisplayName(CC.translate("&f&l** &r&c&lPresent Flare &f&l**")).setItemGlowing()
-                .setUnsafeEnchant(Enchantment.PROTECTION_ENVIRONMENTAL, 1).setLore(CC.translate(" "),CC.translate(" &f&lRight click to summon a Present!")).build();
+            flare = new ItemStack(Material.valueOf(this.presentHunt.getConfig().getString("Flare.item")));
+            ItemMeta meta = flare.getItemMeta();
+            meta.setDisplayName(CC.translate(this.presentHunt.getConfig().getString("Flare.name")));
+            ArrayList<String> lore = new ArrayList<>();
+            for (final String l : this.presentHunt.getConfig().getStringList("Flare.lore")) {
+                lore.add(CC.translate(l));
+            }
+            meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, "flare");
+            meta.setLore(lore);
+            flare.setItemMeta(meta);
+            return flare;
+        }
 
-        ItemMeta meta = flare.getItemMeta();
-        meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, "flare");
-        flare.setItemMeta(meta);
-        return flare;
-    }
+
 
     public void giveFlare(Player player, int amount) {
         ItemStack item = flare();

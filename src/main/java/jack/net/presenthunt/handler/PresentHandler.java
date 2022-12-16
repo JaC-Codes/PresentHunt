@@ -70,7 +70,7 @@ public class PresentHandler implements Listener {
                     hologram.setInvisible(true);
                     hologram.setCustomNameVisible(true);
                     hologram.setGravity(false);
-                    hologram.setCustomName(CC.translate("&f&l** &c&lPresent Crate &f&l**"));
+                    hologram.setCustomName(CC.translate(this.presentHunt.getConfig().getString("Hologram")));
                 }
             }, 1);
 
@@ -79,6 +79,7 @@ public class PresentHandler implements Listener {
 
     @EventHandler
     public void chestBreak(PlayerInteractEvent event) {
+        int itemAmount = this.presentHunt.getConfig().getInt("Amount-Of-Items");
         Player player = event.getPlayer();
         Location location = player.getLocation();
         Block block = event.getClickedBlock();
@@ -91,10 +92,10 @@ public class PresentHandler implements Listener {
             if (customBlockData.has(storedItemKey, PersistentDataType.STRING)) {
                 event.setCancelled(true);
                 event.getClickedBlock().setType(Material.AIR);
-                this.presentHunt.getRand().giveReward(player);
                 hologram.remove();
-
-
+                for (int i = 0; i < itemAmount; i++) {
+                    this.presentHunt.getRand().giveReward(player);
+                }
             }
 
         }
@@ -102,12 +103,21 @@ public class PresentHandler implements Listener {
 
     public void getRandomLocation(World world) {
         Location location;
-        world = Bukkit.getWorld("world");
+        String worldString = this.presentHunt.getConfig().getString("World");
+
+        if (worldString == null) {
+            System.out.println("World null");
+        }
+
+        world = Bukkit.getWorld(worldString);
         Location centerLoc = new Location(world, 0, 0, 0);
         Random random = new Random();
-        double randomX = centerLoc.getX() - Math.round(random.nextDouble(5000)) + Math.round(random.nextDouble(5000));
-        double randomZ = centerLoc.getY() - Math.round(random.nextDouble(5000)) + Math.round(random.nextDouble(5000));
+        double boundsX = this.presentHunt.getConfig().getInt("Coordinates.x");
+        double boundsZ = this.presentHunt.getConfig().getInt("Coordinates.z");
+        double randomX = centerLoc.getX() - Math.round(random.nextDouble(boundsX)) + Math.round(random.nextDouble(boundsX));
+        double randomZ = centerLoc.getY() - Math.round(random.nextDouble(boundsZ)) + Math.round(random.nextDouble(boundsZ));
         location = new Location(world, randomX, 0, randomZ);
+
         location.setY(world.getHighestBlockYAt(location) + 1);
         String falb = this.presentHunt.getConfig().getString("Falling-Block");
         if (falb == null) {
@@ -115,23 +125,26 @@ public class PresentHandler implements Listener {
         }
         Entity entity = (location.getWorld()).spawnFallingBlock(location, Material.matchMaterial(falb).createBlockData());
         entity.getPersistentDataContainer().set(key, PersistentDataType.STRING, "fallingblock");
-        Bukkit.broadcastMessage(CC.translate("""
-                \s
-                &c&lA Present has fallen at!
-                &7Coordinates:\040""" +
-                "&c&lx: &7" + (int) randomX + " &c&ly: &7" + (int) randomZ + "&r"));
+        Bukkit.broadcastMessage(CC.translate(this.presentHunt.getConfig().getString("Random-Landed-Broadcast"))
+                .replace("%randomx%", Double.toString(randomX).replace("%randomz%", Double.toString(randomZ))));
     }
 
     public void phTimer() {
+        int timer = this.presentHunt.getConfig().getInt("RandomDrop-Timer") * 20;
         BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
+        String worldString = this.presentHunt.getConfig().getString("World");
         scheduler.scheduleSyncDelayedTask(presentHunt, new Runnable() {
             @Override
             public void run() {
-                World world = Bukkit.getWorld("world");
+                if (worldString == null) {
+                    World world = Bukkit.getWorld("World");
+                    System.out.println("World null");
+                }
+                World world = Bukkit.getWorld(worldString);
                 getRandomLocation(world);
             }
 
-        }, 30000);
+        }, timer);
 
     }
 }

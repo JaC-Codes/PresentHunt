@@ -1,7 +1,6 @@
 package jack.net.presenthunt;
 
 
-import jack.net.presenthunt.commands.PlayerPresentSummon;
 import jack.net.presenthunt.handler.PresentHandler;
 import jack.net.presenthunt.commands.FlareCommand;
 import jack.net.presenthunt.handler.RandomCollection;
@@ -55,7 +54,6 @@ public class PresentHunt extends JavaPlugin {
 
     private void registerCommands() {
         getCommand("ph").setExecutor(new FlareCommand(this));
-        getCommand("phplayer").setExecutor(new PlayerPresentSummon(this));
     }
 
     private void registerEvents() {
